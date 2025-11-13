@@ -3,382 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Statistik Kotak Amal - Barbara</title>
+    <title>Statistik Dino Wallet</title>
+    <link rel="stylesheet" href="statsstyle.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-            min-height: 100vh;
-        }
-
-        .top-bar {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .top-bar h1 {
-            font-size: 24px;
-            color: #f6b352;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .top-bar-right {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .username-display {
-            background: #f5f5f5;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            color: #666;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            font-size: 14px;
-        }
-
-        .btn-dashboard {
-            background: #f6b352;
-            color: white;
-        }
-
-        .btn-dashboard:hover {
-            background: #e89a3c;
-            transform: translateY(-2px);
-        }
-
-        .btn-logout {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .btn-logout:hover {
-            background: #c0392b;
-            transform: translateY(-2px);
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 30px auto;
-            padding: 0 30px;
-        }
-
-        .tabs {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .tabs button {
-            background: white;
-            border: none;
-            padding: 12px 25px;
-            margin: 0 5px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .tabs button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-        }
-
-        .tabs button.active {
-            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-            color: white;
-        }
-
-        .filter {
-            text-align: center;
-            margin-bottom: 20px;
-            background: white;
-            padding: 15px;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        }
-
-        .filter label {
-            font-weight: 600;
-            color: #666;
-            margin-right: 10px;
-        }
-
-        .filter input,
-        .filter select {
-            padding: 10px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-            margin: 5px;
-            transition: border 0.3s ease;
-        }
-
-        .filter input:focus,
-        .filter select:focus {
-            outline: none;
-            border-color: #f6b352;
-        }
-
-        .stats-card {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-        }
-
-        .stats-card h2 {
-            font-size: 22px;
-            color: #666;
-            margin-bottom: 15px;
-        }
-
-        .stats-card .amount {
-            font-size: 48px;
-            font-weight: bold;
-            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 20px;
-        }
-
-        .btn-export {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 10px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-        }
-
-        .btn-export:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
-        }
-
-        .charts-container {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .chart-wrapper {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-        }
-
-        .chart-wrapper h3 {
-            color: #f6b352;
-            margin-bottom: 20px;
-            font-size: 18px;
-        }
-
-        canvas {
-            max-width: 100%;
-        }
-
-        .table-container {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .table-container h3 {
-            color: #f6b352;
-            margin-bottom: 20px;
-            font-size: 22px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        thead {
-            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-        }
-
-        th {
-            padding: 15px;
-            text-align: left;
-            color: white;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        td {
-            padding: 15px;
-            border-bottom: 1px solid #f0f0f0;
-            color: #666;
-            font-size: 14px;
-        }
-
-        tbody tr {
-            transition: background 0.3s ease;
-        }
-
-        tbody tr:hover {
-            background: #f8f9fa;
-        }
-
-        tbody tr:nth-child(even) {
-            background: #fafafa;
-        }
-
-        tbody tr:nth-child(even):hover {
-            background: #f0f0f0;
-        }
-
-        .no-data {
-            text-align: center;
-            padding: 60px 20px;
-            color: #999;
-            font-size: 18px;
-        }
-
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            backdrop-filter: blur(5px);
-        }
-
-        .popup {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-            min-width: 350px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            animation: popupSlide 0.3s ease;
-        }
-
-        @keyframes popupSlide {
-            from {
-                transform: translateY(-50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .popup h3 {
-            margin-bottom: 30px;
-            color: #f6b352;
-            font-size: 24px;
-        }
-
-        .popup .actions {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        .btn-yes {
-            background: white;
-            color: #f6b352;
-            border: 2px solid #f6b352;
-        }
-
-        .btn-yes:hover {
-            background: #f6b352;
-            color: white;
-        }
-
-        .btn-no, .btn-ok {
-            background: #e74c3c;
-            color: white;
-            border: none;
-        }
-
-        .btn-no:hover, .btn-ok:hover {
-            background: #c0392b;
-        }
-
-        .btn-ok {
-            background: #f6b352;
-        }
-
-        .btn-ok:hover {
-            background: #e89a3c;
-        }
-
-        @media (max-width: 1024px) {
-            .charts-container {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 0 15px;
-            }
-
-            .tabs button {
-                padding: 10px 15px;
-                font-size: 12px;
-                margin: 3px;
-            }
-
-            table {
-                font-size: 12px;
-            }
-
-            th, td {
-                padding: 10px 8px;
-            }
-
-            .stats-card .amount {
-                font-size: 36px;
-            }
-        }
-    </style>
+   
 </head>
 
 <body>
@@ -387,74 +16,113 @@
         if (!token) window.location.href = "/";
     </script>
 
-    <div class="top-bar">
-        <h1>📊 Statistik Kotak Amal</h1>
-        <div class="top-bar-right">
-            <button class="btn btn-dashboard" id="dashboardBtn">🏠 Dashboard</button>
-            <div class="username-display" id="username"></div>
-            <button class="btn btn-logout" id="logoutBtn">Logout</button>
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="tabs">
-            <button id="btnDay" onclick="setMode('day')">📅 Harian</button>
-            <button id="btnMonth" onclick="setMode('month')">📆 Bulanan</button>
-            <button id="btnYear" onclick="setMode('year')">🗓 Tahunan</button>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon"><img src="/assets/Nailoong.jpeg" alt=""></div>
+            <div class="logo-text">Dino Wallet</div>
         </div>
 
-        <div class="filter" id="filterDay">
-            <label for="dateSelect">Pilih Tanggal:</label>
-            <input type="date" id="dateSelect" onchange="updateDay()">
-        </div>
-
-        <div class="filter" id="filterMonth" style="display:none;">
-            <label>Bulan:</label>
-            <select id="monthSelect" onchange="updateMonth()">
-                <option value="0">Januari</option>
-                <option value="1">Februari</option>
-                <option value="2">Maret</option>
-                <option value="3">April</option>
-                <option value="4">Mei</option>
-                <option value="5">Juni</option>
-                <option value="6">Juli</option>
-                <option value="7">Agustus</option>
-                <option value="8">September</option>
-                <option value="9">Oktober</option>
-                <option value="10">November</option>
-                <option value="11">Desember</option>
-            </select>
-            <label>Tahun:</label>
-            <select id="yearSelectM" onchange="updateMonth()"></select>
-        </div>
-
-        <div class="filter" id="filterYear" style="display:none;">
-            <label>Pilih Tahun:</label>
-            <select id="yearSelectY" onchange="updateYear()"></select>
-        </div>
-
-        <div class="stats-card">
-            <h2 id="statsTitle">Total Donasi</h2>
-            <div class="amount" id="statsValue">Rp 0</div>
-            <button class="btn-export" id="exportBtn" onclick="exportToExcel()">
-                📤 Export Data ke Excel
-            </button>
-        </div>
-
-        <div class="charts-container">
-            <div class="chart-wrapper">
-                <h3>📊 Grafik Donasi</h3>
-                <canvas id="donationChart"></canvas>
+        <nav>
+            <div class="nav-section">
+                <div class="nav-label">MENU</div>
+                <a href="#" class="nav-item" id="dashboardBtn">
+                    <span>📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item active">
+                    <span>📈</span>
+                    <span>Analytics</span>
+                </a>
             </div>
-            <div class="chart-wrapper">
-                <h3>🍩 Distribusi Nominal</h3>
-                <canvas id="denomChart"></canvas>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="page-title">
+                <h1>Statistik Kotak Amal</h1>
+                <p>Your recent transaction activity and all</p>
+            </div>
+
+            <div class="top-actions">
+                <div class="search-box">
+                </div>
+
+                <div class="user-profile">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Admin</div>
+                        <div class="user-role" id="userRole">admin@example.com</div>
+                    </div>
+                </div>
+
+                <button class="btn-logout" id="logoutBtn">Logout</button>
             </div>
         </div>
 
-        <div class="table-container" id="dailyList">
+        <div class="container">
+            <div class="tabs">
+                <button id="btnDay" onclick="setMode('day')">📅 Harian</button>
+                <button id="btnMonth" onclick="setMode('month')">📆 Bulanan</button>
+                <button id="btnYear" onclick="setMode('year')">🗓 Tahunan</button>
+            </div>
+
+            <div class="filter" id="filterDay">
+                <label for="dateSelect">Pilih Tanggal:</label>
+                <input type="date" id="dateSelect" onchange="updateDay()">
+            </div>
+
+            <div class="filter" id="filterMonth" style="display:none;">
+                <label>Bulan:</label>
+                <select id="monthSelect" onchange="updateMonth()">
+                    <option value="0">Januari</option>
+                    <option value="1">Februari</option>
+                    <option value="2">Maret</option>
+                    <option value="3">April</option>
+                    <option value="4">Mei</option>
+                    <option value="5">Juni</option>
+                    <option value="6">Juli</option>
+                    <option value="7">Agustus</option>
+                    <option value="8">September</option>
+                    <option value="9">Oktober</option>
+                    <option value="10">November</option>
+                    <option value="11">Desember</option>
+                </select>
+                <label>Tahun:</label>
+                <select id="yearSelectM" onchange="updateMonth()"></select>
+            </div>
+
+            <div class="filter" id="filterYear" style="display:none;">
+                <label>Pilih Tahun:</label>
+                <select id="yearSelectY" onchange="updateYear()"></select>
+            </div>
+
+            <div class="stats-card">
+                <h2 id="statsTitle">Total Donasi</h2>
+                <div class="amount" id="statsValue">Rp 0</div>
+                <button class="btn-export" id="exportBtn" onclick="exportToExcel()">
+                    📤 Export Data ke Excel
+                </button>
+            </div>
+
+            <div class="charts-container">
+                <div class="chart-wrapper">
+                    <h3>📊 Grafik Donasi</h3>
+                    <canvas id="donationChart"></canvas>
+                </div>
+                <div class="chart-wrapper">
+                    <h3>🍩 Distribusi Nominal</h3>
+                    <canvas id="denomChart"></canvas>
+                </div>
+            </div>
+
+            <div class="table-container" id="dailyList">
+            </div>
         </div>
-    </div>
+    </main>
 
     <div class="overlay" id="logoutPopup">
         <div class="popup">
@@ -476,7 +144,6 @@
     </div>
 
     <script>
-        // ==== HELPER FUNCTIONS: KONSISTEN TIMEZONE ====
         function getLocalDate(dateString) {
             const date = new Date(dateString);
             return {
@@ -503,14 +170,22 @@
             return `${hours}:${minutes}:${seconds}`;
         }
 
-        // Username Display
-        const usernameEl = document.getElementById("username");
+        const userName = document.getElementById("userName");
+        const userRole = document.getElementById("userRole");
+        const userAvatar = document.getElementById("userAvatar");
         const username = localStorage.getItem("username") || "User";
         const role = localStorage.getItem("role") || "User";
         const displayName = role === "admin" ? "Admin" : role === "moderator" ? "Moderator" : username;
-        usernameEl.textContent = `👤 ${displayName}`;
+        
+        userName.textContent = displayName;
+        userRole.textContent = `${role}@example.com`;
+        userAvatar.textContent = displayName.charAt(0).toUpperCase();
 
-        // Logout Popup
+        document.getElementById("dashboardBtn").addEventListener("click", (e) => {
+            e.preventDefault();
+            window.location.href = "/";
+        });
+
         const logoutBtn = document.getElementById("logoutBtn");
         const logoutPopup = document.getElementById("logoutPopup");
         const logoutYes = document.getElementById("logoutYes");
@@ -531,18 +206,12 @@
             logoutPopup.style.display = "none";
         });
 
-        document.getElementById("dashboardBtn").addEventListener("click", () => {
-            window.location.href = "/";
-        });
-
         document.getElementById("adminOk").addEventListener("click", () => {
             document.getElementById("adminPopup").style.display = "none";
         });
 
-        // Variables
         let chart, denomChart, allData = [], mode = 'day', currentList = [];
 
-        // Load Data
         document.addEventListener("DOMContentLoaded", async () => {
             try {
                 const res = await fetch('http://localhost:3000/api/donations', {
@@ -619,8 +288,6 @@
             });
             
             const days = new Date(y, m + 1, 0).getDate();
-            
-            // PERBAIKAN KUNCI: Gunakan date (1-31) bukan index (0-30)
             tampilkanData(list, label, "hari", days, i => getLocalDate(i.created_at).date);
         }
 
@@ -638,23 +305,19 @@
             document.getElementById("statsTitle").textContent = `Total Donasi (${label})`;
             document.getElementById("statsValue").textContent = `Rp ${total.toLocaleString('id-ID')}`;
 
-            // PERBAIKAN: Untuk tipe "hari", grup berdasarkan tanggal aktual (1-31)
             let grup, labels;
             
             if (tipe === "jam") {
-                // Jam: 0-23
                 grup = Array.from({ length: 24 }, (_, idx) => 
                     list.filter(i => getKey(i) === idx).reduce((s, i) => s + Number(i.amount), 0)
                 );
                 labels = Array.from({ length: 24 }, (_, i) => i + ":00");
             } else if (tipe === "hari") {
-                // Hari: 1-31 (bukan 0-30)
                 grup = Array.from({ length: jumlah }, (_, idx) => 
                     list.filter(i => getKey(i) === (idx + 1)).reduce((s, i) => s + Number(i.amount), 0)
                 );
                 labels = Array.from({ length: jumlah }, (_, i) => i + 1);
             } else {
-                // Bulan: 0-11
                 grup = Array.from({ length: 12 }, (_, idx) => 
                     list.filter(i => getKey(i) === idx).reduce((s, i) => s + Number(i.amount), 0)
                 );
@@ -670,7 +333,7 @@
                     datasets: [{
                         label: "Total Donasi (Rp)",
                         data: grup,
-                        backgroundColor: "#f6b352",
+                        backgroundColor: "#f9a825",
                         borderRadius: 8
                     }]
                 },
