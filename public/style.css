@@ -1,0 +1,158 @@
+/* Body umum */
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f6f9;
+  margin: 0;
+  color: #333;
+}
+
+/* Header */
+header {
+  background: #007bff; /* sesuai style.css */
+  color: white;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Username dan tombol di header */
+header span#username {
+  margin-right: 15px;
+  font-weight: bold;
+}
+
+header .btn {
+  margin-left: 5px;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  border: none;
+  font-weight: bold;
+}
+
+header .btn-primary {
+  background: #28a745;
+  color: white;
+}
+
+header .btn-danger {
+  background: #dc3545;
+  color: white;
+}
+
+header .btn-secondary {
+  background: #17a2b8;
+  color: white;
+}
+
+/* Main content */
+main {
+  padding: 20px 30px;
+}
+
+/* Stats container (total donasi + filter + export) */
+.stats {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Total donasi */
+.stats h3 span#totalDonasi {
+  font-size: 28px;
+  color: #28a745;
+  display: inline-block;
+  margin-top: 10px;
+}
+
+/* Pie chart container */
+#pieChartContainer {
+  width: 300px;
+  height: 300px;
+  margin: 30px auto;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+table th, table td {
+  padding: 10px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+table th {
+  background: #007bff;
+  color: white;
+}
+
+/* Filter & Export button di stats */
+.stats select,
+.stats button {
+  margin: 10px 5px 0 5px;
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.stats button.btn-primary {
+  background: #007bff;
+  color: white;
+  border: none;
+}
+
+.stats button.btn-primary:hover {
+  background: #0056b3;
+}
+
+.stats select {
+  border: 1px solid #ccc;
+}
+
+/* Login page styling */
+body.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #eef2f7;
+  font-family: sans-serif;
+}
+
+.login-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  width: 300px;
+}
+
+.login-container input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+}
+
+.error {
+  color: red;
+  font-size: 0.9rem;
+  text-align: center;
+}
