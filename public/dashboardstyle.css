@@ -384,6 +384,7 @@ body {
   animation: fadeIn 0.8s ease-out 0.6s both;
   transition: all 0.4s ease;
   position: relative;
+  margin-left: 20px;
 }
 
 .table-card::before {
