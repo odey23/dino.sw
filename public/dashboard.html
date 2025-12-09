@@ -1,195 +1,394 @@
 <!DOCTYPE html>
 <html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard Kotak Amal - Barbara</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dino Wallet - Smart Dashboard</title>
+    
     <link rel="stylesheet" href="dashboardstyle.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  </head>
+</head>
+<body>
 
-  <body>
-    <!-- Cek token login -->
-    <script>
-      // Temporarily commented out for testing simulated login
-      // const token = localStorage.getItem("token");
-      // if (!token) window.location.href = "/";
-    </script>
+    <div class="container fade-in">
+        
+        <header>
+            <div style="display:flex; align-items:center;">
+                <span class="dino-logo">🦖</span>
+                <div>
+                    <h2 style="color: #d35400;">Dino Wallet</h2>
+                    <small>Admin Dashboard</small>
+                </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:15px;">
+                <div style="text-align:right;">
+                    <span style="font-weight:bold; display:block;">Admin</span>
+                    <small style="color:#666;">admin@example.com</small>
+                </div>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </header>
 
-    <div class="dashboard-container">
-      <!-- Sidebar -->
-      <aside class="sidebar">
-        <div class="logo">
-          <div class="logo-icon">
-            <img src="/assets/Nailoong.jpeg" alt="" />
-          </div>
-          <div class="logo-text">Dino Wallet</div>
+        <div class="filter-container">
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="setFilter('daily')"><i class="fas fa-calendar-day"></i> Harian</button>
+                <button class="filter-btn" onclick="setFilter('weekly')"><i class="fas fa-calendar-week"></i> Mingguan</button>
+                <button class="filter-btn" onclick="setFilter('monthly')"><i class="fas fa-calendar-alt"></i> Bulanan</button>
+                <button class="filter-btn" onclick="setFilter('yearly')"><i class="fas fa-calendar"></i> Tahunan</button>
+            </div>
+            
+            <div class="date-inputs" id="customDateRange">
+                <span>Range:</span>
+                <input type="date" id="startDate">
+                <span>s/d</span>
+                <input type="date" id="endDate">
+                <button onclick="applyDateFilter()" style="padding: 8px 15px; background: #3498db; color: white; border:none; border-radius:8px; cursor:pointer;">
+                    <i class="fas fa-search"></i> Cari
+                </button>
+            </div>
         </div>
 
-        <nav>
-          <div class="nav-section">
-            <div class="nav-label">Menu</div>
-            <a href="dashboard.html" class="nav-item active">
-              <span>📊</span>
-              <span>Dashboard</span>
-            </a>
-            <a href="stats.html" class="nav-item" id="analyticsBtn">
-              <span>📈</span>
-              <span>Analytics</span>
-            </a>
-          </div>
-        </nav>
-      </aside>
-
-      <!-- Main Content -->
-      <main class="main-content">
-        <!-- Top Bar -->
-        <div class="top-bar">
-          <div class="page-title">
-            <h1>Dino Wallet</h1>
-            <p>Your recent transaction activity and all</p>
-          </div>
-
-          <div class="top-actions">
-            <div class="search-box">
-            </div>
-
-            <div class="user-profile">
-              <div class="user-avatar" id="userAvatar">👤</div>
-              <div class="user-info">
-                <div class="user-name" id="userName">Admin</div>
-                <div class="user-role" id="userRole">admin@example.com</div>
-              </div>
-            </div>
-
-            <button class="btn-logout" id="logoutBtn">Logout</button>
-          </div>
+        <div class="hero-card fade-in" style="animation-delay: 0.2s;">
+            <p id="periodLabel">Total Donasi (Hari Ini)</p>
+            <h2 id="heroTotal">Rp 0</h2>
+            <button class="export-main-btn" onclick="exportToExcel()">
+                <i class="fas fa-file-excel"></i> Export Data ke Excel
+            </button>
         </div>
 
-        <!-- Stats Grid -->
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-header">
-              <div class="stat-label">Total Donasi</div>
-              <div class="stat-icon">💵</div>
+        <div class="dashboard-grid fade-in" style="animation-delay: 0.4s;">
+            
+            <div class="card">
+                <h4 style="color:#777;">Transaksi Terhitung</h4>
+                <h1 style="color:#3498db; margin-top:10px;" id="countTrans">0</h1>
             </div>
-            <div class="stat-value" id="totalDonasi">Rp 0</div>
-          </div>
+            <div class="card">
+                <h4 style="color:#777;">Device Aktif</h4>
+                <h1 style="color:#27ae60; margin-top:10px;" id="countDevice">0</h1>
+            </div>
+            <div class="card">
+                <h4 style="color:#777;">Rata-rata Donasi</h4>
+                <h1 style="color:#e67e22; margin-top:10px;" id="avgDonasi">Rp 0</h1>
+            </div>
 
-          <div class="stat-card">
-            <div class="stat-header">
-              <div class="stat-label">Total Transaksi</div>
-              <div class="stat-icon">📝</div>
+            <div class="charts-row">
+                <div class="card">
+                    <h4><i class="fas fa-chart-bar"></i> Tren Donasi</h4>
+                    <div class="chart-box">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <h4><i class="fas fa-chart-pie"></i> Distribusi (Persentase)</h4>
+                    <div class="chart-box">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
             </div>
-            <div class="stat-value" id="totalTransaksi">0</div>
-          </div>
 
-          <div class="stat-card">
-            <div class="stat-header">
-              <div class="stat-label">Device Aktif</div>
-              <div class="stat-icon">📱</div>
+            <div class="card table-responsive">
+                <h4><i class="fas fa-list"></i> Riwayat Transaksi (Filtered)</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Tanggal & Jam</th>
+                            <th>Device</th>
+                            <th>Nominal</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        </tbody>
+                </table>
             </div>
-            <div class="stat-value" id="deviceAktif">0</div>
-          </div>
         </div>
 
-        <!-- Table -->
-        <div class="table-card">
-          <div class="table-header">
-            <h3>Riwayat Donasi</h3>
-          </div>
-          <table>
-            <thead>
-              <tr>
-                <th>Tanggal</th>
-                <th>Device</th>
-                <th>Warna</th>
-                <th>Nominal</th>
-              </tr>
-            </thead>
-            <tbody id="donationTableBody">
-              <!-- Data akan dimuat dari JavaScript -->
-            </tbody>
-          </table>
-        </div>
-      </main>
     </div>
 
-    <!-- Popup konfirmasi logout -->
-    <div class="overlay" id="logoutOverlay">
-      <div class="popup">
-        <h3>Apakah anda mau logout?</h3>
-        <div class="popup-actions">
-          <button class="btn-yes" id="confirmYes">Yes</button>
-          <button class="btn-no" id="confirmNo">No</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Dashboard Script -->
-    <script src="dashboard.js"></script>
-
     <script>
-      // Tampilkan username sesuai role
-      const userName = document.getElementById("userName");
-      const userRole = document.getElementById("userRole");
-      const userAvatar = document.getElementById("userAvatar");
-      const username = localStorage.getItem("username") || "User";
-      const role = localStorage.getItem("role") || "User";
+        // --- GLOBAL VARIABLES ---
+        let allData = []; // Stores all fetched data
+        let filteredData = []; // Stores currently viewed data
+        let currentFilter = 'daily';
+        
+        // Chart Instances
+        let myBarChart = null;
+        let myPieChart = null;
 
-      const displayName =
-        role === "admin"
-          ? "Admin"
-          : role === "moderator"
-          ? "Moderator"
-          : username;
-      userName.textContent = displayName;
-      userRole.textContent = `${role}@example.com`;
-      userAvatar.textContent = displayName.charAt(0).toUpperCase();
+        // --- 1. INITIALIZATION & FETCH ---
+        document.addEventListener("DOMContentLoaded", () => {
+            // Set default date inputs to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('startDate').value = today;
+            document.getElementById('endDate').value = today;
 
-      // Logout popup
-      const logoutBtn = document.getElementById("logoutBtn");
-      const overlay = document.getElementById("logoutOverlay");
-      const yesBtn = document.getElementById("confirmYes");
-      const noBtn = document.getElementById("confirmNo");
+            fetchData();
+            
+            // Auto refresh every 10 seconds
+            setInterval(fetchData, 10000); 
+        });
 
-      logoutBtn.addEventListener(
-        "click",
-        () => (overlay.style.display = "flex")
-      );
-      yesBtn.addEventListener("click", () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("role");
-        localStorage.removeItem("username");
-        window.location.href = "/";
-      });
-      noBtn.addEventListener("click", () => (overlay.style.display = "none"));
+        async function fetchData() {
+            // AUTH CHECK
+            const token = localStorage.getItem("token");
+            // if(!token) window.location.href = "/"; // Uncomment for production
 
-      // Switch ke stats.html
-      document.getElementById("analyticsBtn").addEventListener("click", (e) => {
-        e.preventDefault();
-        window.location.href = "/stats";
-      });
+            try {
+                // REAL API CALL (Uncomment below and remove Mock Data)
+                /*
+                const response = await fetch('/api/donations', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error("API Error");
+                const data = await response.json();
+                */
 
-      // Hitung statistik tambahan
-      function updateStats() {
-        const tbody = document.getElementById("donationTableBody");
-        const rows = tbody.getElementsByTagName("tr");
+                // --- MOCK DATA GENERATOR (For Demonstration) ---
+                // Generates data across different months so filters work
+                const mockData = [];
+                const now = new Date();
+                for(let i=0; i<100; i++) {
+                    const d = new Date(now);
+                    d.setDate(d.getDate() - Math.floor(Math.random() * 60)); // Random date last 60 days
+                    mockData.push({
+                        id: i+1,
+                        created_at: d.toISOString(),
+                        amount: [1000, 2000, 5000, 10000, 50000][Math.floor(Math.random()*5)],
+                        device_id: Math.random() > 0.5 ? "DEVICE-01" : "DEVICE-02"
+                    });
+                }
+                const data = mockData;
+                // ----------------------------------------------
 
-        // Total transaksi
-        document.getElementById("totalTransaksi").textContent = rows.length;
+                allData = data;
+                applyDateFilter(); // Apply current filter to new data
 
-        // Device aktif (unique devices)
-        const devices = new Set();
-        for (let row of rows) {
-          const deviceCell = row.cells[1];
-          if (deviceCell) devices.add(deviceCell.textContent);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
         }
-        document.getElementById("deviceAktif").textContent = devices.size;
-      }
 
-      // Jalankan update stats setelah data dimuat
-      setTimeout(updateStats, 1000);
+        // --- 2. FILTERING LOGIC ---
+        function setFilter(type) {
+            currentFilter = type;
+            
+            // Visual Active State
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active'); // Note: 'event' works in inline onclick
+
+            // Adjust Date Inputs based on preset
+            const endInput = document.getElementById('endDate');
+            const startInput = document.getElementById('startDate');
+            const today = new Date();
+            
+            endInput.value = today.toISOString().split('T')[0];
+            
+            let startDate = new Date();
+
+            if(type === 'daily') {
+                // Start date is same as today
+                document.getElementById('periodLabel').innerText = "Total Donasi (Hari Ini)";
+            } else if (type === 'weekly') {
+                startDate.setDate(today.getDate() - 7);
+                document.getElementById('periodLabel').innerText = "Total Donasi (7 Hari Terakhir)";
+            } else if (type === 'monthly') {
+                startDate.setDate(today.getDate() - 30);
+                document.getElementById('periodLabel').innerText = "Total Donasi (30 Hari Terakhir)";
+            } else if (type === 'yearly') {
+                startDate.setFullYear(today.getFullYear() - 1);
+                document.getElementById('periodLabel').innerText = "Total Donasi (1 Tahun Terakhir)";
+            }
+
+            startInput.value = startDate.toISOString().split('T')[0];
+            
+            applyDateFilter();
+        }
+
+        function applyDateFilter() {
+            const startStr = document.getElementById('startDate').value;
+            const endStr = document.getElementById('endDate').value;
+            
+            // Create Date objects (set time to 00:00:00 and 23:59:59)
+            const startDate = new Date(startStr);
+            startDate.setHours(0,0,0,0);
+            
+            const endDate = new Date(endStr);
+            endDate.setHours(23,59,59,999);
+
+            // FILTER THE ARRAY
+            filteredData = allData.filter(item => {
+                const itemDate = new Date(item.created_at);
+                return itemDate >= startDate && itemDate <= endDate;
+            });
+
+            updateUI();
+        }
+
+        // --- 3. UI UPDATE LOGIC ---
+        function updateUI() {
+            // A. Calculate Totals
+            let totalAmount = 0;
+            let uniqueDevices = new Set();
+            
+            filteredData.forEach(item => {
+                totalAmount += parseInt(item.amount);
+                uniqueDevices.add(item.device_id);
+            });
+
+            const avg = filteredData.length > 0 ? (totalAmount / filteredData.length) : 0;
+
+            // B. Update Text Elements
+            document.getElementById('heroTotal').innerText = `Rp ${totalAmount.toLocaleString('id-ID')}`;
+            document.getElementById('countTrans').innerText = filteredData.length;
+            document.getElementById('countDevice').innerText = uniqueDevices.size;
+            document.getElementById('avgDonasi').innerText = `Rp ${Math.floor(avg).toLocaleString('id-ID')}`;
+
+            // C. Update Table
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = "";
+            // Show top 20 recent filtered items
+            const sortedData = [...filteredData].sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+            
+            if(sortedData.length === 0) {
+                tbody.innerHTML = "<tr><td colspan='4' style='text-align:center'>Tidak ada data pada tanggal ini.</td></tr>";
+            } else {
+                sortedData.slice(0, 50).forEach((item, index) => {
+                    const row = `<tr>
+                        <td>${index + 1}</td>
+                        <td>${new Date(item.created_at).toLocaleString('id-ID')}</td>
+                        <td>${item.device_id}</td>
+                        <td style="color:green; font-weight:bold;">Rp ${parseInt(item.amount).toLocaleString('id-ID')}</td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                });
+            }
+
+            // D. Update Charts
+            updateCharts(sortedData, totalAmount);
+        }
+
+        // --- 4. CHART LOGIC (With Percentages) ---
+        function updateCharts(data, grandTotal) {
+            // Group By Amount for Pie Chart
+            const amountCounts = {};
+            data.forEach(d => {
+                amountCounts[d.amount] = (amountCounts[d.amount] || 0) + 1;
+            });
+
+            const labels = Object.keys(amountCounts).map(k => `Rp ${k}`);
+            const values = Object.values(amountCounts);
+
+            // -- PIE CHART --
+            const ctxPie = document.getElementById('pieChart').getContext('2d');
+            if(myPieChart) myPieChart.destroy();
+
+            myPieChart = new Chart(ctxPie, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: ['#ff6b6b', '#feca57', '#48dbfb', '#ff9f43', '#1dd1a1']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let value = context.raw;
+                                    let total = context.chart._metasets[context.datasetIndex].total;
+                                    let percentage = ((value / total) * 100).toFixed(1) + "%";
+                                    return ` Jumlah: ${value} (${percentage})`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // -- BAR CHART (Last 10 Transactions) --
+            const ctxBar = document.getElementById('barChart').getContext('2d');
+            if(myBarChart) myBarChart.destroy();
+
+            // Take first 15 items for cleanliness
+            const chartSubset = data.slice(0, 15).reverse(); 
+
+            myBarChart = new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: chartSubset.map(d => {
+                        const date = new Date(d.created_at);
+                        return `${date.getHours()}:${date.getMinutes()}`;
+                    }),
+                    datasets: [{
+                        label: 'Nominal',
+                        data: chartSubset.map(d => d.amount),
+                        backgroundColor: '#FFD700',
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let value = context.raw;
+                                    // Calculate % relative to the currently filtered total amount
+                                    let percentage = ((value / grandTotal) * 100).toFixed(2) + "%";
+                                    return ` Rp ${value} (${percentage} dari Total)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- 5. EXPORT FUNCTION (CSV) ---
+        function exportToExcel() {
+            if(filteredData.length === 0) {
+                alert("Tidak ada data untuk diexport!");
+                return;
+            }
+
+            // Define CSV Headers
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "No,Tanggal,Waktu,Device ID,Nominal\n";
+
+            // Add Rows
+            filteredData.forEach((item, index) => {
+                const dateObj = new Date(item.created_at);
+                const date = dateObj.toLocaleDateString('id-ID');
+                const time = dateObj.toLocaleTimeString('id-ID');
+                
+                const row = `${index + 1},${date},${time},${item.device_id},${item.amount}`;
+                csvContent += row + "\n";
+            });
+
+            // Create Download Link
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            const fileName = `Laporan_Donasi_${document.getElementById('startDate').value}_sd_${document.getElementById('endDate').value}.csv`;
+            link.setAttribute("download", fileName);
+            document.body.appendChild(link);
+            
+            link.click(); // Trigger download
+            document.body.removeChild(link); // Clean up
+        }
+
+        function logout() {
+            if(confirm('Keluar dari dashboard?')) {
+                localStorage.removeItem('token');
+                window.location.reload();
+            }
+        }
     </script>
-  </body>
+</body>
 </html>
