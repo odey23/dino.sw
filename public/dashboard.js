@@ -227,9 +227,32 @@ function renderCharts() {
     },
     options: {
       responsive: true,
+      animation: false, // Disable animation to fix glitching
+      interaction: {
+        mode: 'index',
+        intersect: false
+      },
+      hover: {
+        mode: 'index',
+        intersect: false
+      },
       plugins: {
         legend: { display: false },
-        tooltip: { callbacks: { label: (c) => `Rp ${c.parsed.y.toLocaleString("id-ID")}` } },
+        tooltip: {
+          callbacks: { label: (c) => `Rp ${c.parsed.y.toLocaleString("id-ID")}` },
+          displayColors: false,
+          backgroundColor: 'rgba(0,0,0,0.8)',
+          titleColor: '#fff',
+          bodyColor: '#fff',
+          borderColor: '#5cb85c',
+          borderWidth: 1,
+          cornerRadius: 8,
+          padding: 12,
+          titleFont: { size: 14, weight: 'bold' },
+          bodyFont: { size: 13 },
+          showDelay: 0,
+          hideDelay: 5000
+        },
         datalabels: {
           formatter: (value) => {
             const total = barData.reduce((a,b)=>a+b,0);
@@ -268,9 +291,31 @@ function renderCharts() {
     options: {
       responsive: true,
       animation: false, // Disable animation to fix bug
+      interaction: {
+        mode: 'nearest',
+        intersect: false
+      },
+      hover: {
+        mode: 'nearest',
+        intersect: false
+      },
       plugins: {
         legend: { position: 'bottom' },
-        tooltip: { callbacks: { label: (c) => `${c.label}: Rp ${c.parsed.toLocaleString("id-ID")}` } },
+        tooltip: {
+          callbacks: { label: (c) => `${c.label}: Rp ${c.parsed.toLocaleString("id-ID")}` },
+          displayColors: true,
+          backgroundColor: 'rgba(0,0,0,0.8)',
+          titleColor: '#fff',
+          bodyColor: '#fff',
+          borderColor: '#5cb85c',
+          borderWidth: 1,
+          cornerRadius: 8,
+          padding: 12,
+          titleFont: { size: 14, weight: 'bold' },
+          bodyFont: { size: 13 },
+          showDelay: 0,
+          hideDelay: 5000
+        },
         datalabels: {
           formatter: (value, ctx) => {
             const sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);

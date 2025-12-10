@@ -19,23 +19,10 @@ body {
     min-height: 100vh;
 }
 
-/* Sidebar */
-.sidebar {
-    width: 250px;
-    background-color: #ffffff;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 2px 0 10px rgba(0,0,0,0.05);
-    position: fixed;
-    height: 100%;
-    z-index: 100;
-}
-
+/* Logo in Header */
 .logo {
     display: flex;
     align-items: center;
-    margin-bottom: 40px;
     font-weight: 700;
     color: #6bbd49; /* Dino Green */
     font-size: 1.2rem;
@@ -44,39 +31,14 @@ body {
 .logo-icon {
     width: 30px;
     height: 30px;
-    background: linear-gradient(135deg, #eecda3, #ef629f); /* Placeholder gradient */
     background: linear-gradient(135deg, #a8e063, #56ab2f); /* Dino Green Gradient */
     border-radius: 8px;
     margin-right: 10px;
 }
 
-.menu-item {
-    padding: 12px 15px;
-    margin-bottom: 10px;
-    border-radius: 10px;
-    cursor: pointer;
-    color: #777;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-}
-
-.menu-item.active {
-    background: linear-gradient(90deg, #f0ad4e, #5cb85c); /* Dino Theme Gradient */
-    color: white;
-    box-shadow: 0 4px 15px rgba(92, 184, 92, 0.4);
-}
-
-.menu-item:hover:not(.active) {
-    background-color: #f0f0f0;
-}
-
 /* Main Content */
 .main-content {
     flex: 1;
-    margin-left: 250px;
     padding: 30px;
     background: linear-gradient(180deg, #f39c12 0%, #f1c40f 20%, #2ecc71 100%); /* Matches screenshot background */
     min-height: 100vh;
@@ -89,6 +51,24 @@ body {
     align-items: center;
     margin-bottom: 30px;
     color: white;
+}
+
+.welcome-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.welcome-text h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.welcome-text p {
+    margin: 5px 0 0 0;
+    opacity: 0.9;
+    font-size: 0.95rem;
 }
 
 .user-profile {
@@ -273,12 +253,22 @@ body {
     padding: 20px;
     border-radius: 15px;
     box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+.chart-card canvas {
+    flex: 1;
+    min-height: 250px;
+    max-height: 400px;
 }
 
 .chart-header {
     margin-bottom: 15px;
     font-weight: 600;
     color: #444;
+    flex-shrink: 0;
 }
 
 /* Table Section */
@@ -366,11 +356,438 @@ tr:hover td { background-color: #fafafa; }
     background-color: #c82333;
 }
 
-/* Responsive */
-@media (max-width: 1000px) {
-    .charts-wrapper { grid-template-columns: 1fr; }
-    .stats-grid { grid-template-columns: 1fr; }
-    .sidebar { width: 70px; padding: 20px 10px; }
-    .sidebar .logo-text, .menu-item span { display: none; }
-    .main-content { margin-left: 70px; }
+/* Responsive Design */
+
+/* Tablet and smaller desktop */
+@media (max-width: 1024px) {
+    .main-content {
+        padding: 20px;
+    }
+
+    .charts-wrapper {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .controls-container {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .filter-group {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .welcome-section {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}
+
+/* Mobile Landscape */
+@media (max-width: 768px) {
+    .main-content {
+        padding: 15px;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .welcome-section {
+        width: 100%;
+    }
+
+    .user-profile {
+        width: 100%;
+        justify-content: space-between;
+        padding: 10px 20px;
+    }
+
+    .logout-btn {
+        margin-left: 10px;
+        padding: 6px 12px;
+        font-size: 0.75rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .stat-card {
+        padding: 20px;
+    }
+
+    .stat-info h2 {
+        font-size: 1.5rem;
+    }
+
+    .controls-container {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+    .filter-btn {
+        padding: 6px 15px;
+        font-size: 0.85rem;
+    }
+
+    .export-btn {
+        padding: 6px 15px;
+        font-size: 0.85rem;
+    }
+
+    .charts-wrapper {
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .chart-card {
+        padding: 15px;
+    }
+
+    .table-container {
+        padding: 15px;
+        overflow-x: auto;
+    }
+
+    .table-header {
+        font-size: 1rem;
+        margin-bottom: 15px;
+    }
+
+    table {
+        min-width: 600px; /* Ensure table doesn't get too compressed */
+    }
+
+    th, td {
+        padding: 10px 8px;
+        font-size: 0.8rem;
+        white-space: nowrap;
+    }
+
+    .popup {
+        margin: 20px;
+        padding: 20px;
+        max-width: none;
+        width: calc(100% - 40px);
+    }
+
+    .popup h3 {
+        font-size: 1rem;
+        margin-bottom: 15px;
+    }
+
+    .actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 12px;
+    }
+}
+
+/* Mobile Portrait */
+@media (max-width: 480px) {
+    .main-content {
+        padding: 10px;
+    }
+
+    .header {
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .logo {
+        font-size: 1rem;
+    }
+
+    .logo-icon {
+        width: 25px;
+        height: 25px;
+        margin-right: 8px;
+    }
+
+    .welcome-text h2 {
+        font-size: 1.2rem;
+    }
+
+    .welcome-text p {
+        font-size: 0.9rem;
+    }
+
+    .user-profile {
+        padding: 8px 15px;
+    }
+
+    .avatar {
+        width: 30px;
+        height: 30px;
+        margin-right: 8px;
+    }
+
+    .user-info h4 {
+        font-size: 0.8rem;
+    }
+
+    .user-info p {
+        font-size: 0.65rem;
+    }
+
+    .logout-btn {
+        padding: 5px 10px;
+        font-size: 0.7rem;
+        margin-left: 8px;
+    }
+
+    .logout-btn span {
+        font-size: 0.8rem;
+    }
+
+    .stats-grid {
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .stat-card {
+        padding: 15px;
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+
+    .stat-info h3 {
+        font-size: 0.8rem;
+        margin-bottom: 3px;
+    }
+
+    .stat-info h2 {
+        font-size: 1.3rem;
+    }
+
+    .icon-box {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+
+    .controls-container {
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    .filter-group {
+        gap: 5px;
+    }
+
+    .filter-btn {
+        padding: 5px 10px;
+        font-size: 0.8rem;
+    }
+
+    .date-input {
+        padding: 6px;
+        font-size: 0.8rem;
+    }
+
+    .export-btn {
+        padding: 5px 10px;
+        font-size: 0.8rem;
+    }
+
+    .charts-wrapper {
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .chart-card {
+        padding: 10px;
+    }
+
+    .chart-header {
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+    }
+
+    .table-container {
+        padding: 10px;
+    }
+
+    .table-header {
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+    }
+
+    table {
+        min-width: 500px;
+    }
+
+    th, td {
+        padding: 8px 6px;
+        font-size: 0.75rem;
+    }
+
+    .popup {
+        margin: 15px;
+        padding: 15px;
+        width: calc(100% - 30px);
+    }
+
+    .popup h3 {
+        font-size: 0.9rem;
+        margin-bottom: 12px;
+    }
+
+    .btn {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Extra Small Mobile */
+@media (max-width: 320px) {
+    .main-content {
+        padding: 8px;
+    }
+
+    .header {
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .logo {
+        font-size: 0.9rem;
+    }
+
+    .logo-icon {
+        width: 22px;
+        height: 22px;
+        margin-right: 6px;
+    }
+
+    .welcome-text h2 {
+        font-size: 1.1rem;
+    }
+
+    .welcome-text p {
+        font-size: 0.8rem;
+    }
+
+    .user-profile {
+        padding: 6px 12px;
+    }
+
+    .avatar {
+        width: 28px;
+        height: 28px;
+        margin-right: 6px;
+    }
+
+    .user-info h4 {
+        font-size: 0.75rem;
+    }
+
+    .user-info p {
+        font-size: 0.6rem;
+    }
+
+    .logout-btn {
+        padding: 4px 8px;
+        font-size: 0.65rem;
+        margin-left: 6px;
+    }
+
+    .logout-btn span {
+        font-size: 0.75rem;
+    }
+
+    .stat-card {
+        padding: 12px;
+    }
+
+    .stat-info h3 {
+        font-size: 0.75rem;
+    }
+
+    .stat-info h2 {
+        font-size: 1.2rem;
+    }
+
+    .icon-box {
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+    }
+
+    .controls-container {
+        padding: 8px;
+    }
+
+    .filter-btn {
+        padding: 4px 8px;
+        font-size: 0.75rem;
+    }
+
+    .export-btn {
+        padding: 4px 8px;
+        font-size: 0.75rem;
+    }
+
+    .chart-card {
+        padding: 8px;
+    }
+
+    .chart-header {
+        font-size: 0.8rem;
+        margin-bottom: 8px;
+    }
+
+    .table-container {
+        padding: 8px;
+    }
+
+    .table-header {
+        font-size: 0.8rem;
+        margin-bottom: 8px;
+    }
+
+    table {
+        min-width: 450px;
+    }
+
+    th, td {
+        padding: 6px 4px;
+        font-size: 0.7rem;
+    }
+
+    .popup {
+        margin: 10px;
+        padding: 12px;
+        width: calc(100% - 20px);
+    }
+
+    .popup h3 {
+        font-size: 0.8rem;
+        margin-bottom: 10px;
+    }
+
+    .btn {
+        padding: 8px;
+        font-size: 0.8rem;
+    }
 }
