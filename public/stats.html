@@ -1,421 +1,382 @@
 <!DOCTYPE html>
 <html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Statistik Dino Wallet</title>
-    <link rel="stylesheet" href="statsstyle.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Analytics - Dino Wallet</title>
+    <link rel="stylesheet" href="dashboardstyle.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-   
-</head>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+    <style>
+      /* Fade-in Animation */
+      .container {
+        animation: fadeInAnimation ease 1s;
+        animation-iteration-count: 1;
+        animation-fill-mode: forwards;
+        opacity: 0;
+      }
+      @keyframes fadeInAnimation {
+        from {
+          opacity: 0;
+          transform: translateY(15px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
 
-<body>
-    <script>
-        const token = localStorage.getItem("token");
-        if (!token) window.location.href = "/";
-    </script>
+      /* Styles for new elements */
+      .filters-and-export {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+        padding: 1.5rem;
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
+      .filter-buttons {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+      .filter-buttons button,
+      .btn-export {
+        padding: 0.6rem 1.2rem;
+        border: 1px solid #ddd;
+        background-color: #fff;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s ease;
+      }
+      .filter-buttons button:hover,
+      .btn-export:hover {
+        background-color: #f0f0f0;
+        transform: translateY(-2px);
+      }
+      .filter-buttons button.active {
+        background: linear-gradient(135deg, #f9a825, #4caf50);
+        color: white;
+        border-color: transparent;
+      }
+      .date-range-picker {
+        display: none;
+        gap: 0.5rem;
+        align-items: center;
+      }
+      .date-range-picker input {
+        padding: 0.6rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+      }
+      .dashboard-body {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 1.5rem;
+        align-items: flex-start;
+      }
+      .chart-card {
+        background-color: #fff;
+        padding: 1.5rem;
+        border-radius: 25px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      }
+      .chart-card h3 {
+        margin-top: 0;
+        margin-bottom: 1.5rem;
+        text-align: center;
+        font-size: 1.3rem;
+        color: #333;
+      }
+      .table-card {
+        margin-left: 0; /* Override margin from dashboardstyle.css */
+      }
+    </style>
+  </head>
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
+  <body>
+    <div class="dashboard-container">
+      <!-- Sidebar -->
+      <aside class="sidebar">
         <div class="logo">
-            <div class="logo-icon"><img src="/assets/Nailoong.jpeg" alt=""></div>
-            <div class="logo-text">Dino Wallet</div>
+          <div class="logo-icon">
+            <img src="/assets/Nailoong.jpeg" alt="" />
+          </div>
+          <div class="logo-text">Dino Wallet</div>
         </div>
-
         <nav>
-            <div class="nav-section">
-                <div class="nav-label">MENU</div>
-                <a href="#" class="nav-item" id="dashboardBtn">
-                    <span>📊</span>
-                    <span>Dashboard</span>
-                </a>
-                <a href="#" class="nav-item active">
-                    <span>📈</span>
-                    <span>Analytics</span>
-                </a>
-            </div>
+          <div class="nav-section">
+            <div class="nav-label">Menu</div>
+            <a href="dashboard.html" class="nav-item">
+              <span>📊</span>
+              <span>Dashboard</span>
+            </a>
+            <a href="stats.html" class="nav-item active" id="analyticsBtn">
+              <span>📈</span>
+              <span>Analytics</span>
+            </a>
+          </div>
         </nav>
-    </aside>
+      </aside>
 
-    <!-- Main Content -->
-    <main class="main-content">
+      <!-- Main Content -->
+      <main class="main-content">
         <!-- Top Bar -->
         <div class="top-bar">
-            <div class="page-title">
-                <h1>Statistik Kotak Amal</h1>
-                <p>Your recent transaction activity and all</p>
+          <div class="page-title">
+            <h1>Analytics & Statistics</h1>
+            <p>Filter, analyze, and export donation data</p>
+          </div>
+          <div class="top-actions">
+            <div class="user-profile">
+              <div class="user-avatar" id="userAvatar">👤</div>
+              <div class="user-info">
+                <div class="user-name" id="userName">Admin</div>
+                <div class="user-role" id="userRole">admin@example.com</div>
+              </div>
             </div>
-
-            <div class="top-actions">
-                <div class="search-box">
-                </div>
-
-                <div class="user-profile">
-                    <div class="user-avatar" id="userAvatar">A</div>
-                    <div class="user-info">
-                        <div class="user-name" id="userName">Admin</div>
-                        <div class="user-role" id="userRole">admin@example.com</div>
-                    </div>
-                </div>
-
-                <button class="btn-logout" id="logoutBtn">Logout</button>
-            </div>
+            <button class="btn-logout" id="logoutBtn">Logout</button>
+          </div>
         </div>
 
         <div class="container">
-            <div class="tabs">
-                <button id="btnDay" onclick="setMode('day')">📅 Harian</button>
-                <button id="btnMonth" onclick="setMode('month')">📆 Bulanan</button>
-                <button id="btnYear" onclick="setMode('year')">🗓 Tahunan</button>
+          <!-- Filters and Export -->
+          <div class="filters-and-export">
+            <div class="filter-buttons" id="filterButtons">
+              <button class="active" data-filter="all">All</button>
+              <button data-filter="daily">Daily</button>
+              <button data-filter="weekly">Weekly</button>
+              <button data-filter="monthly">Monthly</button>
+              <button data-filter="yearly">Yearly</button>
+              <div class="date-range-picker" id="dateRangePicker">
+                <input type="date" id="startDate" />
+                <span>to</span>
+                <input type="date" id="endDate" />
+              </div>
+            </div>
+            <button class="btn-export" id="exportBtn">Export to CSV</button>
+          </div>
+
+          <!-- Dashboard Body -->
+          <div class="dashboard-body">
+            <!-- Table -->
+            <div class="table-card">
+              <div class="table-header">
+                <h3>Filtered Donations</h3>
+              </div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Tanggal</th>
+                    <th>Device</th>
+                    <th>Warna</th>
+                    <th>Nominal</th>
+                  </tr>
+                </thead>
+                <tbody id="donationTableBody">
+                  <!-- Data will be loaded from dashboard.js -->
+                </tbody>
+              </table>
             </div>
 
-            <div class="filter" id="filterDay">
-                <label for="dateSelect">Pilih Tanggal:</label>
-                <input type="date" id="dateSelect" onchange="updateDay()">
+            <!-- Chart -->
+            <div class="chart-card">
+              <h3>Donations by Device</h3>
+              <canvas id="donationChart"></canvas>
             </div>
-
-            <div class="filter" id="filterMonth" style="display:none;">
-                <label>Bulan:</label>
-                <select id="monthSelect" onchange="updateMonth()">
-                    <option value="0">Januari</option>
-                    <option value="1">Februari</option>
-                    <option value="2">Maret</option>
-                    <option value="3">April</option>
-                    <option value="4">Mei</option>
-                    <option value="5">Juni</option>
-                    <option value="6">Juli</option>
-                    <option value="7">Agustus</option>
-                    <option value="8">September</option>
-                    <option value="9">Oktober</option>
-                    <option value="10">November</option>
-                    <option value="11">Desember</option>
-                </select>
-                <label>Tahun:</label>
-                <select id="yearSelectM" onchange="updateMonth()"></select>
-            </div>
-
-            <div class="filter" id="filterYear" style="display:none;">
-                <label>Pilih Tahun:</label>
-                <select id="yearSelectY" onchange="updateYear()"></select>
-            </div>
-
-            <div class="stats-card">
-                <h2 id="statsTitle">Total Donasi</h2>
-                <div class="amount" id="statsValue">Rp 0</div>
-                <button class="btn-export" id="exportBtn" onclick="exportToExcel()">
-                    📤 Export Data ke Excel
-                </button>
-            </div>
-
-            <div class="charts-container">
-                <div class="chart-wrapper">
-                    <h3>📊 Grafik Donasi</h3>
-                    <canvas id="donationChart"></canvas>
-                </div>
-                <div class="chart-wrapper">
-                    <h3>🍩 Distribusi Nominal</h3>
-                    <canvas id="denomChart"></canvas>
-                </div>
-            </div>
-
-            <div class="table-container" id="dailyList">
-            </div>
+          </div>
         </div>
-    </main>
-
-    <div class="overlay" id="logoutPopup">
-        <div class="popup">
-            <h3>Apakah anda mau logout?</h3>
-            <div class="actions">
-                <button class="btn btn-yes" id="logoutYes">Yes</button>
-                <button class="btn btn-no" id="logoutNo">No</button>
-            </div>
-        </div>
+      </main>
     </div>
 
-    <div class="overlay" id="adminPopup">
-        <div class="popup">
-            <h3>Maaf, hanya administrator yang bisa melakukan ini!</h3>
-            <div class="actions">
-                <button class="btn btn-ok" id="adminOk">OK</button>
-            </div>
+    <!-- Popup konfirmasi logout -->
+    <div class="overlay" id="logoutOverlay">
+      <div class="popup">
+        <h3>Apakah anda mau logout?</h3>
+        <div class="popup-actions">
+          <button class="btn-yes" id="confirmYes">Yes</button>
+          <button class="btn-no" id="confirmNo">No</button>
         </div>
+      </div>
     </div>
 
+    <!-- Scripts -->
+    <script src="dashboard.js"></script>
     <script>
-        function getLocalDate(dateString) {
-            const date = new Date(dateString);
-            return {
-                year: date.getFullYear(),
-                month: date.getMonth(),
-                date: date.getDate(),
-                hours: date.getHours()
-            };
+      // --- DOM & USER INFO ---
+      const donationTableBody = document.getElementById("donationTableBody");
+      const userName = document.getElementById("userName");
+      const userRole = document.getElementById("userRole");
+      const userAvatar = document.getElementById("userAvatar");
+      const username = localStorage.getItem("username") || "User";
+      const role = localStorage.getItem("role") || "User";
+
+      const displayName = role === "admin" ? "Admin" : role === "moderator" ? "Moderator" : username;
+      userName.textContent = displayName;
+      userRole.textContent = `${role}@example.com`;
+      userAvatar.textContent = displayName.charAt(0).toUpperCase();
+
+      // --- LOGOUT ---
+      const logoutBtn = document.getElementById("logoutBtn");
+      const overlay = document.getElementById("logoutOverlay");
+      logoutBtn.addEventListener("click", () => (overlay.style.display = "flex"));
+      document.getElementById("confirmYes").addEventListener("click", () => {
+        localStorage.clear();
+        window.location.href = "/";
+      });
+      document.getElementById("confirmNo").addEventListener("click", () => (overlay.style.display = "none"));
+
+      // --- CHART & STATS LOGIC ---
+      let donationChart = null;
+      let allDonationData = []; // Cache for all data
+
+      function formatCurrency(amount) {
+        return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(amount);
+      }
+
+      function updateAnalytics(filteredData) {
+        // 1. Update Table
+        donationTableBody.innerHTML = "";
+        if (filteredData.length === 0) {
+          donationTableBody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No data available for this period.</td></tr>`;
+        } else {
+          filteredData.forEach((item) => {
+            const row = document.createElement("tr");
+            // Use a consistent date format for display
+            const displayDate = new Date(item.dateObj).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            row.innerHTML = `<td>${displayDate}</td><td>${item.device}</td><td>${item.warna}</td><td>${formatCurrency(item.nominal)}</td>`;
+            donationTableBody.appendChild(row);
+          });
         }
 
-        function formatDateOnly(dateString) {
-            const date = new Date(dateString);
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            return `${day}/${month}/${year}`;
+        // 2. Update Chart
+        const donationByDevice = filteredData.reduce((acc, item) => {
+          acc[item.device] = (acc[item.device] || 0) + item.nominal;
+          return acc;
+        }, {});
+
+        if (donationChart) donationChart.destroy();
+        const ctx = document.getElementById("donationChart").getContext("2d");
+        donationChart = new Chart(ctx, {
+          type: "pie",
+          data: {
+            labels: Object.keys(donationByDevice),
+            datasets: [{
+              data: Object.values(donationByDevice),
+              backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"],
+              borderColor: "#fff",
+              borderWidth: 2,
+            }],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: "top" },
+              tooltip: { callbacks: { label: (c) => `${c.label}: ${formatCurrency(c.parsed)}` } },
+              datalabels: {
+                formatter: (value, ctx) => {
+                  const sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                  if (sum === 0) return '0%';
+                  const percentage = ((value * 100) / sum).toFixed(1) + "%";
+                  return percentage;
+                },
+                color: "#fff",
+                font: { weight: "bold", size: 14 },
+              },
+            },
+          },
+          plugins: [ChartDataLabels],
+        });
+      }
+
+      // --- FILTERING LOGIC ---
+      function applyFilters() {
+        const activeFilter = document.querySelector("#filterButtons .active").dataset.filter;
+        const now = new Date();
+        let filteredData = allDonationData;
+
+        if (activeFilter === "daily") {
+          const start = new Date(document.getElementById("startDate").value);
+          const end = new Date(document.getElementById("endDate").value);
+          if (!isNaN(start) && !isNaN(end)) {
+            start.setHours(0, 0, 0, 0);
+            end.setHours(23, 59, 59, 999);
+            filteredData = allDonationData.filter(item => item.dateObj >= start && item.dateObj <= end);
+          }
+        } else if (activeFilter === "weekly") {
+          const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
+          weekStart.setHours(0, 0, 0, 0);
+          filteredData = allDonationData.filter(item => item.dateObj >= weekStart);
+        } else if (activeFilter === "monthly") {
+          const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+          filteredData = allDonationData.filter(item => item.dateObj >= monthStart);
+        } else if (activeFilter === "yearly") {
+          const yearStart = new Date(now.getFullYear(), 0, 1);
+          filteredData = allDonationData.filter(item => item.dateObj >= yearStart);
         }
+        updateAnalytics(filteredData);
+      }
 
-        function formatTimeOnly(dateString) {
-            const date = new Date(dateString);
-            const hours = String(date.getHours()).padStart(2, '0');
-            const minutes = String(date.getMinutes()).padStart(2, '0');
-            const seconds = String(date.getSeconds()).padStart(2, '0');
-            return `${hours}:${minutes}:${seconds}`;
+      // --- EVENT LISTENERS ---
+      document.getElementById("filterButtons").addEventListener("click", (e) => {
+        if (e.target.tagName === "BUTTON") {
+          document.querySelectorAll("#filterButtons button").forEach((btn) => btn.classList.remove("active"));
+          e.target.classList.add("active");
+          document.getElementById("dateRangePicker").style.display = e.target.dataset.filter === "daily" ? "flex" : "none";
+          applyFilters();
         }
+      });
 
-        const userName = document.getElementById("userName");
-        const userRole = document.getElementById("userRole");
-        const userAvatar = document.getElementById("userAvatar");
-        const username = localStorage.getItem("username") || "User";
-        const role = localStorage.getItem("role") || "User";
-        const displayName = role === "admin" ? "Admin" : role === "moderator" ? "Moderator" : username;
-        
-        userName.textContent = displayName;
-        userRole.textContent = `${role}@example.com`;
-        userAvatar.textContent = displayName.charAt(0).toUpperCase();
+      document.getElementById("dateRangePicker").addEventListener("change", applyFilters);
 
-        document.getElementById("dashboardBtn").addEventListener("click", (e) => {
-            e.preventDefault();
-            window.location.href = "/";
+      document.getElementById("exportBtn").addEventListener("click", () => {
+        let csvContent = "data:text/csv;charset=utf-8,Tanggal,Device,Warna,Nominal\r\n";
+        const rows = donationTableBody.querySelectorAll("tr");
+        rows.forEach(row => {
+          const cols = row.querySelectorAll("td");
+          if (cols.length > 1) { // Exclude "no data" message
+             const rowData = Array.from(cols).map(col => `"${col.textContent.replace(/"/g, '""')}"`).join(",");
+             csvContent += rowData + "\r\n";
+          }
         });
+        const link = document.createElement("a");
+        link.setAttribute("href", encodeURI(csvContent));
+        link.setAttribute("download", "dino_wallet_analytics.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
 
-        const logoutBtn = document.getElementById("logoutBtn");
-        const logoutPopup = document.getElementById("logoutPopup");
-        const logoutYes = document.getElementById("logoutYes");
-        const logoutNo = document.getElementById("logoutNo");
-
-        logoutBtn.addEventListener("click", () => {
-            logoutPopup.style.display = "flex";
-        });
-
-        logoutYes.addEventListener("click", () => {
-            localStorage.removeItem("token");
-            localStorage.removeItem("role");
-            localStorage.removeItem("username");
-            window.location.href = "/";
-        });
-
-        logoutNo.addEventListener("click", () => {
-            logoutPopup.style.display = "none";
-        });
-
-        document.getElementById("adminOk").addEventListener("click", () => {
-            document.getElementById("adminPopup").style.display = "none";
-        });
-
-        let chart, denomChart, allData = [], mode = 'day', currentList = [];
-
-        document.addEventListener("DOMContentLoaded", async () => {
-            try {
-                const res = await fetch('http://localhost:3000/api/donations', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                allData = await res.json();
-                isiDropdownTahun();
-                setMode('day');
-            } catch (err) {
-                console.error(err);
-                alert("Gagal mengambil data donasi.");
-            }
-        });
-
-        function isiDropdownTahun() {
-            const years = [...new Set(allData.map(i => getLocalDate(i.created_at).year))].sort();
-            const ySelectM = document.getElementById("yearSelectM");
-            const ySelectY = document.getElementById("yearSelectY");
-            years.forEach(y => {
-                ySelectM.innerHTML += `<option value="${y}">${y}</option>`;
-                ySelectY.innerHTML += `<option value="${y}">${y}</option>`;
-            });
-        }
-
-        function setMode(newMode) {
-            mode = newMode;
-            document.querySelectorAll(".tabs button").forEach(b => b.classList.remove("active"));
-            document.getElementById("btn" + capitalize(newMode)).classList.add("active");
-            document.getElementById("filterDay").style.display = newMode === 'day' ? "block" : "none";
-            document.getElementById("filterMonth").style.display = newMode === 'month' ? "block" : "none";
-            document.getElementById("filterYear").style.display = newMode === 'year' ? "block" : "none";
-            if (newMode === 'day') updateDay();
-            if (newMode === 'month') updateMonth();
-            if (newMode === 'year') updateYear();
-        }
-
-        function updateDay() {
-            let selDate;
-            const dateInput = document.getElementById("dateSelect").value;
-            
-            if (dateInput) {
-                const [year, month, day] = dateInput.split('-').map(Number);
-                selDate = { year, month: month - 1, date: day };
-            } else {
-                const now = new Date();
-                selDate = {
-                    year: now.getFullYear(),
-                    month: now.getMonth(),
-                    date: now.getDate()
+      // --- INITIAL DATA LOAD ---
+      // The dashboard.js script will populate the table. We will observe it.
+      const observer = new MutationObserver((mutationsList, obs) => {
+        for (const mutation of mutationsList) {
+          if (mutation.type === "childList" && donationTableBody.rows.length > 0) {
+            // Once data is in the table, parse it into our cache
+            allDonationData = Array.from(donationTableBody.querySelectorAll("tr")).map(row => {
+                if (row.cells.length < 4) return null;
+                return {
+                  tanggal: row.cells[0].textContent,
+                  device: row.cells[1].textContent,
+                  warna: row.cells[2].textContent,
+                  nominal: parseFloat(row.cells[3].textContent.replace(/[^0-9]/g, "")),
+                  dateObj: new Date(row.dataset.isoDate), // Use ISO date from dashboard.js
                 };
-            }
-
-            const displayDate = new Date(selDate.year, selDate.month, selDate.date);
-            const label = displayDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+              }).filter(Boolean);
             
-            const list = allData.filter(i => {
-                const itemDate = getLocalDate(i.created_at);
-                return itemDate.date === selDate.date && 
-                       itemDate.month === selDate.month && 
-                       itemDate.year === selDate.year;
-            });
-            
-            tampilkanData(list, label, "jam", 24, i => getLocalDate(i.created_at).hours);
+            applyFilters(); // Run initial filter and render
+            obs.disconnect(); // Stop observing
+            return;
+          }
         }
-
-        function updateMonth() {
-            const m = Number(document.getElementById("monthSelect").value);
-            const y = Number(document.getElementById("yearSelectM").value);
-            const label = `${new Date(y, m).toLocaleString('id-ID', { month: 'long' })} ${y}`;
-            
-            const list = allData.filter(i => {
-                const itemDate = getLocalDate(i.created_at);
-                return itemDate.month === m && itemDate.year === y;
-            });
-            
-            const days = new Date(y, m + 1, 0).getDate();
-            tampilkanData(list, label, "hari", days, i => getLocalDate(i.created_at).date);
-        }
-
-        function updateYear() {
-            const y = Number(document.getElementById("yearSelectY").value);
-            const label = `Tahun ${y}`;
-            
-            const list = allData.filter(i => getLocalDate(i.created_at).year === y);
-            tampilkanData(list, label, "bulan", 12, i => getLocalDate(i.created_at).month);
-        }
-
-        function tampilkanData(list, label, tipe, jumlah, getKey) {
-            currentList = list;
-            const total = list.reduce((s, i) => s + Number(i.amount), 0);
-            document.getElementById("statsTitle").textContent = `Total Donasi (${label})`;
-            document.getElementById("statsValue").textContent = `Rp ${total.toLocaleString('id-ID')}`;
-
-            let grup, labels;
-            
-            if (tipe === "jam") {
-                grup = Array.from({ length: 24 }, (_, idx) => 
-                    list.filter(i => getKey(i) === idx).reduce((s, i) => s + Number(i.amount), 0)
-                );
-                labels = Array.from({ length: 24 }, (_, i) => i + ":00");
-            } else if (tipe === "hari") {
-                grup = Array.from({ length: jumlah }, (_, idx) => 
-                    list.filter(i => getKey(i) === (idx + 1)).reduce((s, i) => s + Number(i.amount), 0)
-                );
-                labels = Array.from({ length: jumlah }, (_, i) => i + 1);
-            } else {
-                grup = Array.from({ length: 12 }, (_, idx) => 
-                    list.filter(i => getKey(i) === idx).reduce((s, i) => s + Number(i.amount), 0)
-                );
-                labels = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
-            }
-
-            const ctx = document.getElementById("donationChart").getContext("2d");
-            if (chart) chart.destroy();
-            chart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels,
-                    datasets: [{
-                        label: "Total Donasi (Rp)",
-                        data: grup,
-                        backgroundColor: "#f9a825",
-                        borderRadius: 8
-                    }]
-                },
-                options: {
-                    plugins: { legend: { display: false } },
-                    scales: { y: { beginAtZero: true } }
-                }
-            });
-
-            const container = document.getElementById("dailyList");
-            if (!list.length) {
-                container.innerHTML = `<div class="no-data">📭 Tidak ada donasi untuk ${label}</div>`;
-                if (denomChart) denomChart.destroy();
-                return;
-            }
-
-            let html = `<h3>📅 Daftar Donasi (${label})</h3><table><thead><tr><th>No</th><th>Nominal</th><th>Warna</th><th>Tanggal</th><th>Jam</th></tr></thead><tbody>`;
-            list.forEach((item, i) => {
-                const tanggal = formatDateOnly(item.created_at);
-                const jam = formatTimeOnly(item.created_at);
-                html += `<tr><td>${i + 1}</td><td>Rp ${Number(item.amount).toLocaleString('id-ID')}</td><td>${item.metadata?.warna || '-'}</td><td>${tanggal}</td><td>${jam}</td></tr>`;
-            });
-            html += `</tbody></table>`;
-            container.innerHTML = html;
-
-            updatePieChart(list);
-        }
-
-        function updatePieChart(list) {
-            const denomCounts = {};
-            list.forEach(item => {
-                const amt = Number(item.amount);
-                denomCounts[amt] ? denomCounts[amt]++ : denomCounts[amt] = 1;
-            });
-
-            const labels = Object.keys(denomCounts).sort((a, b) => a - b).map(v => "Rp " + Number(v).toLocaleString('id-ID'));
-            const data = Object.values(denomCounts);
-
-            const ctxPie = document.getElementById("denomChart").getContext("2d");
-            if (denomChart) denomChart.destroy();
-            denomChart = new Chart(ctxPie, {
-                type: 'pie',
-                data: {
-                    labels,
-                    datasets: [{
-                        label: "Jumlah Donasi per Nominal",
-                        data,
-                        backgroundColor: labels.map((_, i) => `hsl(${i * 60 % 360},70%,50%)`)
-                    }]
-                },
-                options: {
-                    plugins: {
-                        legend: { position: 'right' }
-                    }
-                }
-            });
-        }
-
-        function exportToExcel() {
-            if (role !== "admin") {
-                document.getElementById("adminPopup").style.display = "flex";
-                return;
-            }
-            if (!currentList.length) return;
-
-            const rows = currentList.map((item, i) => ({
-                No: i + 1,
-                Nominal: "Rp " + Number(item.amount).toLocaleString('id-ID'),
-                Warna: item.metadata?.warna || '-',
-                Tanggal: formatDateOnly(item.created_at),
-                Jam: formatTimeOnly(item.created_at)
-            }));
-
-            const ws = XLSX.utils.json_to_sheet(rows);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Donasi");
-            XLSX.writeFile(wb, "Data_Donasi.xlsx");
-        }
-
-        function capitalize(s) {
-            return s.charAt(0).toUpperCase() + s.slice(1);
-        }
+      });
+      observer.observe(donationTableBody, { childList: true, subtree: true });
     </script>
-</body>
+  </body>
 </html>

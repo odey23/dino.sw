@@ -1,394 +1,188 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dino Wallet - Smart Dashboard</title>
-    
+    <title>Dino Wallet Dashboard</title>
     <link rel="stylesheet" href="dashboardstyle.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 </head>
 <body>
 
-    <div class="container fade-in">
-        
-        <header>
-            <div style="display:flex; align-items:center;">
-                <span class="dino-logo">🦖</span>
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                <span class="logo-text">Dino Wallet</span>
+            </div>
+            
+            <nav>
+                <a href="#" class="menu-item active">
+                    <span>📊</span>&nbsp; Dashboard
+                </a>
+                <a href="#analytics" class="menu-item">
+                    <span>📈</span>&nbsp; Analytics
+                </a>
+            </nav>
+        </div>
+
+        <main class="main-content">
+            
+            <div class="header">
                 <div>
-                    <h2 style="color: #d35400;">Dino Wallet</h2>
-                    <small>Admin Dashboard</small>
+                    <h2>Hello, Admin!</h2>
+                    <p>Welcome back to your wallet overview.</p>
+                </div>
+                <div class="user-profile">
+                    <div class="avatar">👤</div>
+                    <div class="user-info">
+                        <h4 id="username">Admin</h4>
+                        <p>admin@example.com</p>
+                    </div>
+                    <button class="logout-btn" id="logoutBtn">
+                        <span>🚪</span> Logout
+                    </button>
                 </div>
             </div>
-            <div style="display:flex; align-items:center; gap:15px;">
-                <div style="text-align:right;">
-                    <span style="font-weight:bold; display:block;">Admin</span>
-                    <small style="color:#666;">admin@example.com</small>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h3>Total Donasi</h3>
+                        <h2 id="totalDonasi">Rp 0</h2>
+                    </div>
+                    <div class="icon-box">💵</div>
                 </div>
-                <button class="logout-btn" onclick="logout()">Logout</button>
-            </div>
-        </header>
-
-        <div class="filter-container">
-            <div class="filter-buttons">
-                <button class="filter-btn active" onclick="setFilter('daily')"><i class="fas fa-calendar-day"></i> Harian</button>
-                <button class="filter-btn" onclick="setFilter('weekly')"><i class="fas fa-calendar-week"></i> Mingguan</button>
-                <button class="filter-btn" onclick="setFilter('monthly')"><i class="fas fa-calendar-alt"></i> Bulanan</button>
-                <button class="filter-btn" onclick="setFilter('yearly')"><i class="fas fa-calendar"></i> Tahunan</button>
-            </div>
-            
-            <div class="date-inputs" id="customDateRange">
-                <span>Range:</span>
-                <input type="date" id="startDate">
-                <span>s/d</span>
-                <input type="date" id="endDate">
-                <button onclick="applyDateFilter()" style="padding: 8px 15px; background: #3498db; color: white; border:none; border-radius:8px; cursor:pointer;">
-                    <i class="fas fa-search"></i> Cari
-                </button>
-            </div>
-        </div>
-
-        <div class="hero-card fade-in" style="animation-delay: 0.2s;">
-            <p id="periodLabel">Total Donasi (Hari Ini)</p>
-            <h2 id="heroTotal">Rp 0</h2>
-            <button class="export-main-btn" onclick="exportToExcel()">
-                <i class="fas fa-file-excel"></i> Export Data ke Excel
-            </button>
-        </div>
-
-        <div class="dashboard-grid fade-in" style="animation-delay: 0.4s;">
-            
-            <div class="card">
-                <h4 style="color:#777;">Transaksi Terhitung</h4>
-                <h1 style="color:#3498db; margin-top:10px;" id="countTrans">0</h1>
-            </div>
-            <div class="card">
-                <h4 style="color:#777;">Device Aktif</h4>
-                <h1 style="color:#27ae60; margin-top:10px;" id="countDevice">0</h1>
-            </div>
-            <div class="card">
-                <h4 style="color:#777;">Rata-rata Donasi</h4>
-                <h1 style="color:#e67e22; margin-top:10px;" id="avgDonasi">Rp 0</h1>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h3>Total Transaksi</h3>
+                        <h2 id="totalTransaksi">0</h2>
+                    </div>
+                    <div class="icon-box">📄</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h3>Device Aktif</h3>
+                        <h2 id="deviceAktif">0</h2>
+                    </div>
+                    <div class="icon-box">📱</div>
+                </div>
             </div>
 
-            <div class="charts-row">
-                <div class="card">
-                    <h4><i class="fas fa-chart-bar"></i> Tren Donasi</h4>
-                    <div class="chart-box">
-                        <canvas id="barChart"></canvas>
+            <div class="controls-container" id="analytics">
+                <div class="filter-group">
+                    <button class="filter-btn active" data-filter="all" onclick="setFilter(this, 'all')">All</button>
+                    <button class="filter-btn" data-filter="daily" onclick="setFilter(this, 'daily')">Daily</button>
+                    <button class="filter-btn" data-filter="weekly" onclick="setFilter(this, 'weekly')">Weekly</button>
+                    <button class="filter-btn" data-filter="monthly" onclick="setFilter(this, 'monthly')">Monthly</button>
+                    <button class="filter-btn" data-filter="yearly" onclick="setFilter(this, 'yearly')">Yearly</button>
+                    
+                    <div class="date-range-inputs" id="dateRangeContainer">
+                        <input type="date" class="date-input" id="startDate">
+                        <span>to</span>
+                        <input type="date" class="date-input" id="endDate">
+                        <button class="filter-btn" style="background:#5cb85c; color:white;" onclick="fetchDonations()">Go</button>
                     </div>
                 </div>
-                <div class="card">
-                    <h4><i class="fas fa-chart-pie"></i> Distribusi (Persentase)</h4>
-                    <div class="chart-box">
-                        <canvas id="pieChart"></canvas>
-                    </div>
+                <button class="export-btn" onclick="exportToCSV()">Export to CSV</button>
+            </div>
+
+            <div class="charts-wrapper">
+                <div class="chart-card">
+                    <div class="chart-header">Donation Statistics (Detailed)</div>
+                    <canvas id="barChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">Donations by Device</div>
+                    <canvas id="pieChart"></canvas>
                 </div>
             </div>
 
-            <div class="card table-responsive">
-                <h4><i class="fas fa-list"></i> Riwayat Transaksi (Filtered)</h4>
+            <div class="table-container">
+                <div class="table-header">Riwayat Donasi</div>
                 <table>
                     <thead>
                         <tr>
-                            <th>No</th>
-                            <th>Tanggal & Jam</th>
+                            <th>Tanggal</th>
                             <th>Device</th>
+                            <th>Warna</th>
                             <th>Nominal</th>
                         </tr>
                     </thead>
-                    <tbody id="tableBody">
+                    <tbody id="donationTableBody">
                         </tbody>
                 </table>
             </div>
-        </div>
 
+        </main>
     </div>
 
+    <!-- Popup konfirmasi logout -->
+    <div class="overlay" id="logoutOverlay">
+      <div class="popup">
+        <h3>Apakah anda mau logout?</h3>
+        <div class="actions">
+          <button class="btn btn-white" id="confirmYes">Yes</button>
+          <button class="btn btn-danger" id="confirmNo">No</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+
     <script>
-        // --- GLOBAL VARIABLES ---
-        let allData = []; // Stores all fetched data
-        let filteredData = []; // Stores currently viewed data
-        let currentFilter = 'daily';
-        
-        // Chart Instances
-        let myBarChart = null;
-        let myPieChart = null;
+      document.addEventListener('DOMContentLoaded', () => {
+        // --- DOM ELEMENTS ---
+        const donationTableBody = document.getElementById("donationTableBody");
 
-        // --- 1. INITIALIZATION & FETCH ---
-        document.addEventListener("DOMContentLoaded", () => {
-            // Set default date inputs to today
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('startDate').value = today;
-            document.getElementById('endDate').value = today;
+        // Tampilkan username sesuai role
+        const usernameEl = document.getElementById("username");
+        const username = localStorage.getItem("username") || "User";
+        const role = localStorage.getItem("role") || "User";
+        usernameEl.textContent = `User: ${role === "admin" ? "Admin" : role === "moderator" ? "moderator" : username}`;
 
-            fetchData();
-            
-            // Auto refresh every 10 seconds
-            setInterval(fetchData, 10000); 
+        // Logout popup
+        const logoutBtn = document.getElementById("logoutBtn");
+        const overlay = document.getElementById("logoutOverlay");
+        const yesBtn = document.getElementById("confirmYes");
+        const noBtn = document.getElementById("confirmNo");
+
+        if (logoutBtn) {
+          logoutBtn.addEventListener("click", () => {
+            console.log("Logout button clicked");
+            overlay.style.display = "flex";
+          });
+        }
+
+        if (yesBtn) {
+          yesBtn.addEventListener("click", () => {
+            localStorage.removeItem("token");
+            localStorage.removeItem("role");
+            localStorage.removeItem("username");
+            window.location.href = "login.html";
+          });
+        }
+
+        if (noBtn) {
+          noBtn.addEventListener("click", () => overlay.style.display = "none");
+        }
+
+        // Update stats based on table data
+        const observer = new MutationObserver((mutationsList, obs) => {
+          const rows = donationTableBody.getElementsByTagName("tr");
+          const totalTransaksi = rows.length;
+          const devices = new Set();
+          Array.from(rows).forEach(row => {
+              if(row.cells[1]) devices.add(row.cells[1].textContent);
+          });
+
+          document.getElementById("totalTransaksi").textContent = totalTransaksi;
+          document.getElementById("deviceAktif").textContent = devices.size;
+          // totalDonasi is updated by dashboard.js
         });
-
-        async function fetchData() {
-            // AUTH CHECK
-            const token = localStorage.getItem("token");
-            // if(!token) window.location.href = "/"; // Uncomment for production
-
-            try {
-                // REAL API CALL (Uncomment below and remove Mock Data)
-                /*
-                const response = await fetch('/api/donations', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                if (!response.ok) throw new Error("API Error");
-                const data = await response.json();
-                */
-
-                // --- MOCK DATA GENERATOR (For Demonstration) ---
-                // Generates data across different months so filters work
-                const mockData = [];
-                const now = new Date();
-                for(let i=0; i<100; i++) {
-                    const d = new Date(now);
-                    d.setDate(d.getDate() - Math.floor(Math.random() * 60)); // Random date last 60 days
-                    mockData.push({
-                        id: i+1,
-                        created_at: d.toISOString(),
-                        amount: [1000, 2000, 5000, 10000, 50000][Math.floor(Math.random()*5)],
-                        device_id: Math.random() > 0.5 ? "DEVICE-01" : "DEVICE-02"
-                    });
-                }
-                const data = mockData;
-                // ----------------------------------------------
-
-                allData = data;
-                applyDateFilter(); // Apply current filter to new data
-
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        }
-
-        // --- 2. FILTERING LOGIC ---
-        function setFilter(type) {
-            currentFilter = type;
-            
-            // Visual Active State
-            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active'); // Note: 'event' works in inline onclick
-
-            // Adjust Date Inputs based on preset
-            const endInput = document.getElementById('endDate');
-            const startInput = document.getElementById('startDate');
-            const today = new Date();
-            
-            endInput.value = today.toISOString().split('T')[0];
-            
-            let startDate = new Date();
-
-            if(type === 'daily') {
-                // Start date is same as today
-                document.getElementById('periodLabel').innerText = "Total Donasi (Hari Ini)";
-            } else if (type === 'weekly') {
-                startDate.setDate(today.getDate() - 7);
-                document.getElementById('periodLabel').innerText = "Total Donasi (7 Hari Terakhir)";
-            } else if (type === 'monthly') {
-                startDate.setDate(today.getDate() - 30);
-                document.getElementById('periodLabel').innerText = "Total Donasi (30 Hari Terakhir)";
-            } else if (type === 'yearly') {
-                startDate.setFullYear(today.getFullYear() - 1);
-                document.getElementById('periodLabel').innerText = "Total Donasi (1 Tahun Terakhir)";
-            }
-
-            startInput.value = startDate.toISOString().split('T')[0];
-            
-            applyDateFilter();
-        }
-
-        function applyDateFilter() {
-            const startStr = document.getElementById('startDate').value;
-            const endStr = document.getElementById('endDate').value;
-            
-            // Create Date objects (set time to 00:00:00 and 23:59:59)
-            const startDate = new Date(startStr);
-            startDate.setHours(0,0,0,0);
-            
-            const endDate = new Date(endStr);
-            endDate.setHours(23,59,59,999);
-
-            // FILTER THE ARRAY
-            filteredData = allData.filter(item => {
-                const itemDate = new Date(item.created_at);
-                return itemDate >= startDate && itemDate <= endDate;
-            });
-
-            updateUI();
-        }
-
-        // --- 3. UI UPDATE LOGIC ---
-        function updateUI() {
-            // A. Calculate Totals
-            let totalAmount = 0;
-            let uniqueDevices = new Set();
-            
-            filteredData.forEach(item => {
-                totalAmount += parseInt(item.amount);
-                uniqueDevices.add(item.device_id);
-            });
-
-            const avg = filteredData.length > 0 ? (totalAmount / filteredData.length) : 0;
-
-            // B. Update Text Elements
-            document.getElementById('heroTotal').innerText = `Rp ${totalAmount.toLocaleString('id-ID')}`;
-            document.getElementById('countTrans').innerText = filteredData.length;
-            document.getElementById('countDevice').innerText = uniqueDevices.size;
-            document.getElementById('avgDonasi').innerText = `Rp ${Math.floor(avg).toLocaleString('id-ID')}`;
-
-            // C. Update Table
-            const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = "";
-            // Show top 20 recent filtered items
-            const sortedData = [...filteredData].sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
-            
-            if(sortedData.length === 0) {
-                tbody.innerHTML = "<tr><td colspan='4' style='text-align:center'>Tidak ada data pada tanggal ini.</td></tr>";
-            } else {
-                sortedData.slice(0, 50).forEach((item, index) => {
-                    const row = `<tr>
-                        <td>${index + 1}</td>
-                        <td>${new Date(item.created_at).toLocaleString('id-ID')}</td>
-                        <td>${item.device_id}</td>
-                        <td style="color:green; font-weight:bold;">Rp ${parseInt(item.amount).toLocaleString('id-ID')}</td>
-                    </tr>`;
-                    tbody.innerHTML += row;
-                });
-            }
-
-            // D. Update Charts
-            updateCharts(sortedData, totalAmount);
-        }
-
-        // --- 4. CHART LOGIC (With Percentages) ---
-        function updateCharts(data, grandTotal) {
-            // Group By Amount for Pie Chart
-            const amountCounts = {};
-            data.forEach(d => {
-                amountCounts[d.amount] = (amountCounts[d.amount] || 0) + 1;
-            });
-
-            const labels = Object.keys(amountCounts).map(k => `Rp ${k}`);
-            const values = Object.values(amountCounts);
-
-            // -- PIE CHART --
-            const ctxPie = document.getElementById('pieChart').getContext('2d');
-            if(myPieChart) myPieChart.destroy();
-
-            myPieChart = new Chart(ctxPie, {
-                type: 'doughnut',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        data: values,
-                        backgroundColor: ['#ff6b6b', '#feca57', '#48dbfb', '#ff9f43', '#1dd1a1']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    let value = context.raw;
-                                    let total = context.chart._metasets[context.datasetIndex].total;
-                                    let percentage = ((value / total) * 100).toFixed(1) + "%";
-                                    return ` Jumlah: ${value} (${percentage})`;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
-            // -- BAR CHART (Last 10 Transactions) --
-            const ctxBar = document.getElementById('barChart').getContext('2d');
-            if(myBarChart) myBarChart.destroy();
-
-            // Take first 15 items for cleanliness
-            const chartSubset = data.slice(0, 15).reverse(); 
-
-            myBarChart = new Chart(ctxBar, {
-                type: 'bar',
-                data: {
-                    labels: chartSubset.map(d => {
-                        const date = new Date(d.created_at);
-                        return `${date.getHours()}:${date.getMinutes()}`;
-                    }),
-                    datasets: [{
-                        label: 'Nominal',
-                        data: chartSubset.map(d => d.amount),
-                        backgroundColor: '#FFD700',
-                        borderRadius: 5
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    let value = context.raw;
-                                    // Calculate % relative to the currently filtered total amount
-                                    let percentage = ((value / grandTotal) * 100).toFixed(2) + "%";
-                                    return ` Rp ${value} (${percentage} dari Total)`;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        // --- 5. EXPORT FUNCTION (CSV) ---
-        function exportToExcel() {
-            if(filteredData.length === 0) {
-                alert("Tidak ada data untuk diexport!");
-                return;
-            }
-
-            // Define CSV Headers
-            let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "No,Tanggal,Waktu,Device ID,Nominal\n";
-
-            // Add Rows
-            filteredData.forEach((item, index) => {
-                const dateObj = new Date(item.created_at);
-                const date = dateObj.toLocaleDateString('id-ID');
-                const time = dateObj.toLocaleTimeString('id-ID');
-                
-                const row = `${index + 1},${date},${time},${item.device_id},${item.amount}`;
-                csvContent += row + "\n";
-            });
-
-            // Create Download Link
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            const fileName = `Laporan_Donasi_${document.getElementById('startDate').value}_sd_${document.getElementById('endDate').value}.csv`;
-            link.setAttribute("download", fileName);
-            document.body.appendChild(link);
-            
-            link.click(); // Trigger download
-            document.body.removeChild(link); // Clean up
-        }
-
-        function logout() {
-            if(confirm('Keluar dari dashboard?')) {
-                localStorage.removeItem('token');
-                window.location.reload();
-            }
-        }
+        observer.observe(donationTableBody, { childList: true, subtree: true });
+      });
     </script>
 </body>
 </html>
