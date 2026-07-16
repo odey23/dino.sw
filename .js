@@ -73,6 +73,48 @@ app.post("/api/login", (req, res) => {
   });
 });
 
+// ==== BUAT AKUN BARU ====
+app.post("/api/register", async (req, res) => {
+  const username = typeof req.body.username === "string" ? req.body.username.trim() : "";
+  const password = typeof req.body.password === "string" ? req.body.password : "";
+
+  if (!username || !password)
+    return res.status(400).json({ message: "Username dan password wajib diisi" });
+
+  if (!/^[a-zA-Z0-9_.-]{3,30}$/.test(username))
+    return res.status(400).json({
+      message: "Username harus 3-30 karakter dan hanya boleh berisi huruf, angka, titik, garis bawah, atau tanda minus",
+    });
+
+  if (password.length < 8)
+    return res.status(400).json({ message: "Password minimal 8 karakter" });
+
+  try {
+    const [existingUsers] = await db.promise().query(
+      "SELECT username FROM users WHERE username = ? LIMIT 1",
+      [username]
+    );
+
+    if (existingUsers.length > 0)
+      return res.status(409).json({ message: "Username sudah digunakan" });
+
+    const passwordHash = await bcrypt.hash(password, 12);
+    await db.promise().query(
+      "INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
+      [username, passwordHash, "user"]
+    );
+
+    return res.status(201).json({ message: "Akun berhasil dibuat. Silakan login." });
+  } catch (err) {
+    console.error("Gagal membuat akun:", err);
+
+    if (err.code === "ER_DUP_ENTRY")
+      return res.status(409).json({ message: "Username sudah digunakan" });
+
+    return res.status(500).json({ message: "Gagal membuat akun. Coba lagi nanti." });
+  }
+});
+
 // ==== API DEVICE REGISTER ====
 app.post("/api/devices/register", (req, res) => {
   const { device_uuid, device_key, location } = req.body;
@@ -165,6 +207,10 @@ app.get("/dashboard", (req, res) =>
 
 app.get("/stats", (req, res) =>
   res.sendFile(path.join(__dirname, "public", "stats.html"))
+);
+
+app.get("/register", (req, res) =>
+  res.sendFile(path.join(__dirname, "public", "register.html"))
 );
 
 // ==== FALLBACK ====

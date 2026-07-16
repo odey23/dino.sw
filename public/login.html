@@ -118,6 +118,20 @@
     button:active {
       transform: translateY(0) scale(1);
     }
+    .forgot-password-link {
+      display: inline-block;
+      margin-top: 0.85rem;
+      color: #2b6cb0;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: color 0.2s ease, transform 0.2s ease;
+    }
+    .forgot-password-link:hover {
+      color: #1a4f85;
+      transform: translateY(-1px);
+      text-decoration: underline;
+    }
     @keyframes pulse {
       0% { box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3); }
       50% { box-shadow: 0 4px 20px rgba(255, 215, 0, 0.5); }
@@ -194,6 +208,13 @@
         <input id="password" type="password" placeholder="Password">
       </div>
       <button id="loginBtn">Login</button>
+      <a
+        id="forgotPasswordLink"
+        class="forgot-password-link"
+        href="register.html"
+      >
+        Create new instance
+      </a>
       <p id="message"></p>
     </div>
     <div class="image-section">

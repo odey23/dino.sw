@@ -32,6 +32,7 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
       // Simpan token dan role ke localStorage
       localStorage.setItem("token", data.token);
       localStorage.setItem("role", data.role);
+      localStorage.setItem("username", data.username);
 
       // Redirect ke dashboard
       window.location.href = "/dashboard";
@@ -45,3 +46,11 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
     loginBtn.textContent = "Login";
   }
 });
+
+const forgotPasswordLink = document.getElementById("forgotPasswordLink");
+if (forgotPasswordLink) {
+  forgotPasswordLink.addEventListener("click", () => {
+    const message = document.getElementById("message");
+    if (message) message.textContent = "";
+  });
+}
